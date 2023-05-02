@@ -1,101 +1,163 @@
+
 #include "main.h"
-int p_unsigned(va_list typ, char buff[],
-int flg, int wth, int prc, int syz)
+
+/************************* PRINT UNSIGNED NUMBER *************************/
+/**
+ * P_unsigned - Prints an unsigned number
+ * @typ: List a of arguments
+ * @buff: buff array to handle print
+ * @flg:  Calculates active flg
+ * @wth: get wth
+ * @prc: prc specification
+ * @syz: syz specifier
+ * Return: Number of chars printed.
+ */
+int P_unsigned(va_list typ, char buff[],
+	int flg, int wth, int prc, int syz)
 {
-int i = BUFF_syz - 2;
-unsigned long int n = va_arg(typ, unsigned long int);
+	int i = B_syz - 2;
+	unsigned long int num = va_arg(typ, unsigned long int);
 
-n = convert_syz_unsgnd(n, syz);
+	num = Cnv_syz_uns(num, syz);
 
-if (n == 0)
-buff[i--] = '0';
+	if (num == 0)
+		buff[i--] = '0';
 
-buff[BUFF_syz - 1] = '\0';
+	buff[B_syz - 1] = '\0';
 
-while (n > 0)
-{
-buff[i--] = (n % 10) + '0';
-n /= 10;
+	while (num > 0)
+	{
+		buff[i--] = (num % 10) + '0';
+		num /= 10;
+	}
+
+	i++;
+
+	return (W_unsgnd(0, i, buff, flg, wth, prc, syz));
 }
 
-i++;
-
-return (write_unsgnd(0, i, buff, flg, wth, prc, syz));
-}
-
-int p_octal(va_list typ, char buff[],
-int flg, int wth, int prc, int syz)
+/************* PRINT UNSIGNED NUMBER IN OCTAL  ****************/
+/**
+ * P_octal - Prints an unsigned number in octal notation
+ * @typ: Lista of arguments
+ * @buff: buff array to handle print
+ * @flg:  Calculates active flg
+ * @wth: get wth
+ * @prc: prc specification
+ * @syz: syz specifier
+ * Return: Number of chars printed
+ */
+int P_octal(va_list typ, char buff[],
+	int flg, int wth, int prc, int syz)
 {
 
-int i = BUFF_syz - 2;
-unsigned long int n = va_arg(typ, unsigned long int);
-unsigned long int NN = n;
+	int i = B_syz - 2;
+	unsigned long int num = va_arg(typ, unsigned long int);
+	unsigned long int init_n = num;
 
-UNUSED(wth);
+	UNUSED(wth);
 
-n = convert_syz_unsgnd(n, syz);
+	num = Cnv_syz_uns(num, syz);
 
-if (n == 0)
-buff[i--] = '0';
+	if (num == 0)
+		buff[i--] = '0';
 
-buff[BUFF_syz - 1] = '\0';
+	buff[B_syz - 1] = '\0';
 
-while (n > 0)
+	while (num > 0)
+	{
+		buff[i--] = (num % 8) + '0';
+		num /= 8;
+	}
+
+	if (flg & F_HASH && init_n != 0)
+		buff[i--] = '0';
+
+	i++;
+
+	return (W_unsgnd(0, i, buff, flg, wth, prc, syz));
+}
+
+/************** PRINT UNSIGNED NUMBER IN HEXADECIMAL **************/
+/**
+ * P_hexaDe - Prints an unsigned number in hexadecimal notation
+ * @typ: Lista of arguments
+ * @buff: buff array to handle print
+ * @flg:  Calculates active flg
+ * @wth: get wth
+ * @prc: prc specification
+ * @syz: syz specifier
+ * Return: Number of chars printed
+ */
+int P_hexaDe(va_list typ, char buff[],
+	int flg, int wth, int prc, int syz)
 {
-buff[i--] = (n % 8) + '0';
-n /= 8;
+	return (P_hexa(typ, "0123456789abcdef", buff,
+		flg, 'x', wth, prc, syz));
 }
 
-if (flg & FF && NN != 0)
-buff[i--] = '0';
-
-i++;
-
-return (write_unsgnd(0, i, buff, flg, wth, prc, syz));
-}
-int p_hexaU(va_list typ, char buff[],
-int flg, int wth, int prc, int syz)
+/************* PRINT UNSIGNED NUMBER IN UPPER HEXADECIMAL **************/
+/**
+ * P_hexaUp - Prints an unsigned number in upper hexadecimal notation
+ * @typ: Lista of arguments
+ * @buff: buff array to handle print
+ * @flg:  Calculates active flg
+ * @wth: get wth
+ * @prc: prc specification
+ * @syz: syz specifier
+ * Return: Number of chars printed
+ */
+int P_hexaUp(va_list typ, char buff[],
+	int flg, int wth, int prc, int syz)
 {
-return (p_hexa(typ, "0123ABCD", buff,
-flg, 'X', wth, prc, syz));
+	return (P_hexa(typ, "0123456789ABCDEF", buff,
+		flg, 'X', wth, prc, syz));
 }
 
-int p_hexaD(va_list typ, char buff[],
-int flg, int wth, int prc, int syz)
+/************** PRINT HEXX NUM IN LOWER OR UPPER **************/
+/**
+ * P_hexa - Prints a hexadecimal number in lower or upper
+ * @typ: Lista of arguments
+ * @To: Array of values to map the number to
+ * @buff: buff array to handle print
+ * @flg:  Calculates active flg
+ * @flag_ch: Calculates active flg
+ * @wth: get wth
+ * @prc: prc specification
+ * @syz: syz specifier
+ * @syz: syz specification
+ * Return: Number of chars printed
+ */
+int P_hexa(va_list typ, char To[], char buff[],
+	int flg, char flag_ch, int wth, int prc, int syz)
 {
-return (p_hexa(typ, "0123456789abcdefghi", buff,
-flg, 'x', wth, prc, syz));
+	int i = B_syz - 2;
+	unsigned long int num = va_arg(typ, unsigned long int);
+	unsigned long int init_n = num;
+
+	UNUSED(wth);
+
+	num = Cnv_syz_uns(num, syz);
+
+	if (num == 0)
+		buff[i--] = '0';
+
+	buff[B_syz - 1] = '\0';
+
+	while (num > 0)
+	{
+		buff[i--] = To[num % 16];
+		num /= 16;
+	}
+
+	if (flg & F_HASH && init_n != 0)
+	{
+		buff[i--] = flag_ch;
+		buff[i--] = '0';
+	}
+
+	i++;
+
+	return (W_unsgnd(0, i, buff, flg, wth, prc, syz));
 }
 
-int p_hexa(va_list typ, char map_to[], char buff[],
-int flg, char flag_ch, int wth, int prc, int syz)
-{
-int i = BUFF_syz - 2;
-unsigned long int n = va_arg(typ, unsigned long int);
-unsigned long int NN = n;
-
-UNUSED(wth);
-
-n = convert_syz_unsgnd(n, syz);
-
-if (n == 0)
-buff[i--] = '0';
-
-buff[BUFF_syz - 1] = '\0';
-
-while (n > 0)
-{
-buff[i--] = map_to[n % 16];
-n /= 16;
-}
-
-if (flg & FF && NN != 0)
-{
-buff[i--] = flag_ch;
-buff[i--] = '0';
-}
-
-i++;
-
-return (write_unsgnd(0, i, buff, flg, wth, prc, syz));
-}
